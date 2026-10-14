@@ -1,0 +1,21 @@
+## Start with Docker
+
+1. Install Docker Desktop and make sure Docker Compose is available.
+2. From this directory run:
+
+docker compose up --build -d
+
+3. Open Swagger at <http://localhost:8000/docs>. The health endpoint is <http://localhost:8000/health>.
+
+The API applies pending Alembic migrations before starting. Celery worker and Beat start after the API health check passes.
+
+## API
+
+All endpoints are GET requests. `ticker` is required and accepts `btc_usd` or `eth_usd`.
+
+- `GET /prices?ticker=btc_usd` — all saved values for the ticker.
+- `GET /prices/latest?ticker=eth_usd` — the most recent saved value; returns 404 if no value has been collected yet.
+- `GET /prices/by-date?ticker=btc_usd&date=2026-10-14` — values collected on the specified UTC calendar date. `date` is required; no matching records returns an empty list.
+- `GET /health` — checks the API to PostgreSQL connection.
+
+Each price row contains `id`, `ticker`, `price`, and `timestamp` (UNIX time in seconds, captured when the response is received).
